@@ -1,15 +1,27 @@
-# .github/actions/my-workflow-module/action.yml
 name: "DevSecX_workflow"
-description: "A reusable composite action for common CI tasks."
-inputs:
-  python-version:
-    description: "Python version to set up."
-    required: false
-    default: "3.12"
+description: "Scan the current repository's source code, send it to the LLM API using built-in API credentials, and upload the API response as an artifact."
 runs:
   using: "composite"
   steps:
-    - name: Install dependencies
-      shell: bash
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Install required packages
       run: |
-        pip install bandit bandit-sarif-formatter
+        pip install --upgrade pip
+        pip install requests
+
+    - name: Run source code scan and LLM API request
+      run: |
+        python scan_llm.py
+
+    - name: Upload LLM API Response Artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: llm-response
+        path: response.txt
