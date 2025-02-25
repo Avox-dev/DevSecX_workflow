@@ -5,7 +5,12 @@ runs:
   steps:
     - name: Checkout current repository
       uses: actions/checkout@v3
-
+    - name: Checkout DevSecX_workflow repository
+      uses: actions/checkout@v3
+      with:
+        repository: avox-dev/DevSecX_workflow
+        ref: main
+        path: devsecx_workflow
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
