@@ -3,6 +3,7 @@ import os
 import requests
 from Grok_api import Grok_req
 from bandit_result import run_bandit_cli
+import argparse
 
 def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", ".h")):
     """
@@ -25,6 +26,10 @@ def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", 
 
 
 def main():
+    parser = argparse.ArgumentParser(description="LLM API 요청 스크립트")
+    parser.add_argument("--api-key", required=True, help="LLM API 키")
+    args = parser.parse_args()
+
     source_files_list=get_source_files('../DevSecX')
     
     for file_path in source_files_list:
@@ -61,7 +66,7 @@ def main():
             5. Conclusion  
             - Summary of the report and recommendations for future remediation:
             '''
-            LLM_res=Grok_req(promft)
+            LLM_res=Grok_req(promft,args.api_key)
             
         except Exception as e:
             print(f"{file_path} 스캔 중 오류 발생: {e}")

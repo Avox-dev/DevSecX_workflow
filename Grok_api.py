@@ -1,9 +1,9 @@
 from groq import Groq
 import os
 
-def Grok_req(prompt: str) -> str:
+def Grok_req(prompt: str,api_key) -> str:
 
-    client = Groq(api_key=os.getenv("Groq_API_KEY"))
+    client = Groq(api_key=api_key)
     completion = client.chat.completions.create(
         model="llama-3.3-70b-specdec",
         messages=[{"role": "user", "content": prompt}],
