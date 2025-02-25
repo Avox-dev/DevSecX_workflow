@@ -20,7 +20,7 @@ runs:
     - name: Run source code scan and LLM API request
       shell: bash
       run: |
-        python scan_llm.py
+        python devsecx_workflow/scan_llm.py
 
     - name: Upload LLM API Response Artifact
       uses: actions/upload-artifact@v4.6.1
