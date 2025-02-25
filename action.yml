@@ -3,30 +3,33 @@ description: "Scan the current repository's source code, send it to the LLM API 
 runs:
   using: "composite"
   steps:
+    #호출한 리포지토리 체크아웃
     - name: Checkout current repository
       uses: actions/checkout@v3
+    #DevSecX_workflow 리포지토리 체크아웃
     - name: Checkout DevSecX_workflow repository
       uses: actions/checkout@v3
       with:
         repository: avox-dev/DevSecX_workflow
         ref: main
         path: devsecx_workflow
+    #3.12 파이썬
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.12"
-
+    # 종속성 설치
     - name: Install required packages
       shell: bash
       run: |
         pip install --upgrade pip
         pip install requests
-
+    # 스크립트 실행
     - name: Run source code scan and LLM API request
       shell: bash
       run: |
         python devsecx_workflow/scan_llm.py
-
+    #결과 아티팩트 업로드
     - name: Upload LLM API Response Artifact
       uses: actions/upload-artifact@v4.6.1
       with:

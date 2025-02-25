@@ -1,30 +1,75 @@
 #!/usr/bin/env python3
 import os
 import requests
+from Grok_api import Grok_req
+from bandit_result import run_bandit_cli
 
-def scan_source_code():
-    """현재 디렉토리 이하의 모든 .py 파일을 읽어 하나의 문자열로 결합."""
-    code_snippets = []
-    for root, _, files in os.walk("."):
-        for file in files:
-            if file.endswith(".py"):
-                file_path = os.path.join(root, file)
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content = f.read()
-                        code_snippets.append(f"File: {file_path}\n{content}\n")
-                except Exception as e:
-                    print(f"파일 {file_path} 읽기 실패: {e}")
-    return "\n".join(code_snippets)
+def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", ".h")):
+    """
+    주어진 루트 디렉토리 내에서 지정된 확장자를 가진 모든 소스 파일의 경로를 리스트로 반환합니다.
+    
+    Parameters:
+        root_dir (str): 소스 파일 검색을 시작할 루트 디렉토리 경로.
+        extensions (tuple): 검색할 파일 확장자들의 튜플. 기본값은 (".py", ".js", ".java", ".cpp", ".c", ".h") 입니다.
+    
+    Returns:
+        list: 해당 확장자를 가진 파일들의 전체 경로 목록.
+    """
+    source_files = []
+    for dirpath, _, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.endswith(extensions):
+                source_files.append(os.path.join(dirpath, filename))
+    return source_files
+
+
 
 def main():
-
-    # 소스코드 스캔
-    payload = scan_source_code()
+    source_files_list=get_source_files('../DevSecX')
     
-    with open("response.txt", "w", encoding="utf-8") as f:
-        f.write(payload)
-    print("소스코드가가 response.txt에 저장되었습니다.")
+    for file_path in source_files_list:
+        try:
+            # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
+            scan_result = run_bandit_cli(file_path)
+            promft=scan_result+'''
+            위 결과를 보고 밑에 조건대로 명심하고 응답하세요
+            1.한국어로 답변할것
+            2.아래 주어진 양식대로 작성할것
+            [Example report form].
+
+            1. Overview.  
+            - Scan run date and time and target file information:  
+            - Summary of the overall scan results (e.g., total number of issues detected, severity distribution, etc.):
+
+            2. Detailed vulnerability analysis  
+            - Vulnerability ID: Example) B307  
+            - Vulnerability Description:  
+            - Issues and security concerns related to the use of dangerous functions (e.g., eval).  
+            - Severity and confidence level: e.g.) Medium, High  
+            - Related CWE: CWE-78 (OS Instruction Injection)  
+            - Found in: File path and code line number  
+            - References: Links to related documentation
+
+            3. Impact Analysis and Risk Assessment  
+            - The impact of the vulnerability on the system or application:  
+            - Security risk assessment and prioritization:
+
+            4. Recommendations and remediation.  
+            - Specific recommendations for improving the vulnerability (e.g., recommendation to use ast.literal_eval instead of eval)  
+            - Suggestions for additional security best practices:
+
+            5. Conclusion  
+            - Summary of the report and recommendations for future remediation:
+            '''
+            LLM_res=Grok_req(promft)
+            
+        except Exception as e:
+            print(f"{file_path} 스캔 중 오류 발생: {e}")
+        with open("response.txt", "a", encoding="utf-8") as outfile:
+            outfile.write(LLM_res)
+
+                
+    print("스캔결과 response.txt에 저장되었습니다.")
 
 if __name__ == "__main__":
     main()
