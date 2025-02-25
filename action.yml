@@ -12,11 +12,13 @@ runs:
         python-version: "3.12"
 
     - name: Install required packages
+      shell: bash
       run: |
         pip install --upgrade pip
         pip install requests
 
     - name: Run source code scan and LLM API request
+      shell: bash
       run: |
         python scan_llm.py
 
