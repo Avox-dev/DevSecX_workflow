@@ -23,7 +23,7 @@ runs:
       shell: bash
       run: |
         pip install --upgrade pip
-        pip install requests
+        pip install requests groq
     # 스크립트 실행
     - name: Run source code scan and LLM API request
       shell: bash
