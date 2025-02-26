@@ -1,6 +1,6 @@
-"# DevSecX_workflow"  
+# DevSecX_workflow
 
-
+```yml
 name: CI/CD Pipeline
 
 on:
@@ -18,3 +18,4 @@ jobs:
     steps:
       - name: Run DevSecX Workflow
         uses: avox-dev/DevSecX_workflow@main
+```
