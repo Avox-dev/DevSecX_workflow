@@ -15,7 +15,7 @@ runs:
         ref: main
         path: devsecx_workflow
 
-    # 3. 3.12 버전의 파이썬 설정
+    # 3. Python 설정
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -28,13 +28,13 @@ runs:
         pip install --upgrade pip
         pip install requests groq bandit
 
-    # 5. 스크립트 실행 (secrets를 환경 변수로 전달)
+    # 5. 스크립트 실행 (env를 통해 API_KEY 전달)
     - name: Run source code scan and LLM API request
       shell: bash
       env:
-        MY_API_KEY: ${{ secrets.MY_API_KEY }}
+        MY_API_KEY: ${{ env.MY_API_KEY }}
       run: |
-        python devsecx_workflow/scan_llm.py --api-key $MY_API_KEY
+        python devsecx_workflow/scan_llm.py --api-key "$MY_API_KEY"
 
     # 6. 결과 아티팩트 업로드
     - name: Upload LLM API Response Artifact
