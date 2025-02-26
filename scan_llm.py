@@ -25,6 +25,8 @@ def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", 
         # devsecx_workflow 폴더 및 모든 하위 폴더 제외
         if "devsecx_workflow" in dirpath:
             continue  # 탐색에서 제외
+        if "new" in dirpath:
+            continue  # 탐색에서 제외
         
         for filename in filenames:
             if filename.endswith(extensions):
