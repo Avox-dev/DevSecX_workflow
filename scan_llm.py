@@ -4,6 +4,7 @@ import requests
 from Grok_api import Grok_req
 from bandit_result import run_bandit_cli
 import argparse
+from aistudio_api import gemini_generate_content 
 
 import os
 
@@ -81,9 +82,9 @@ def main():
         try:
             # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
             scan_result = run_bandit_cli(file_path)
-            promft=scan_result+'''요약 json파일로 줘
+            prompt=scan_result+'''요약 json파일로 줘
             '''
-            LLM_res=Grok_req(promft,args.api_key)
+            LLM_res=gemini_generate_content(prompt,args.api_key)#Grok_req(promft,args.api_key)
         except Exception as e:
             print(f"{file_path} 스캔 중 오류 발생: {e}")
         # 결과 파일 저장 경로 설정
@@ -94,8 +95,7 @@ def main():
         # 기존 코드 개선
         with open(file_path, "r", encoding="utf-8") as code:
             prompt = code.read() + "\n취약점 대체코드만줘 코드블럭금지\n"
-
-        LLM_code_res = Grok_req(prompt, args.api_key)
+            LLM_code_res = gemini_generate_content(prompt,args.api_key) #Grok_req(prompt, args.api_key)
 
         # 수정된 코드 저장
         save_fixed_code(file_path, LLM_code_res)
