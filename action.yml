@@ -36,7 +36,7 @@ runs:
       run: |
         python devsecx_workflow/scan_llm.py --api-key "$MY_API_KEY"
         echo "Checking if response.txt exists..."
-        ls -al
+        ls devsecx_workflow -al
 
     # 6. 결과 아티팩트 업로드 (파일 경로 확인 후 수정)
     - name: Upload LLM API Response Artifact
