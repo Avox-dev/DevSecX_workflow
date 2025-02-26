@@ -70,8 +70,23 @@ def main():
             
         except Exception as e:
             print(f"{file_path} 스캔 중 오류 발생: {e}")
-        with open("response.txt", "a", encoding="utf-8") as outfile:
-            outfile.write(LLM_res)
+        # 결과 파일 저장 경로 설정
+        output_path = "response.txt"
+
+        # LLM_res 값이 비어 있는지 확인
+        if not LLM_res:
+            print("⚠️ LLM_res is empty! No data to write.")
+        else:
+            with open(output_path, "a", encoding="utf-8") as outfile:
+                outfile.write(LLM_res + "\n")
+            
+            print(f"✅ Response saved to: {output_path}")
+
+        # 최종적으로 response.txt가 존재하는지 확인
+        if os.path.exists(output_path):
+            print(f"📂 response.txt exists at: {os.path.abspath(output_path)}")
+        else:
+            print("❌ response.txt was not created.")
 
                 
     print("스캔결과 response.txt에 저장되었습니다.")
