@@ -79,7 +79,7 @@ def main():
         if not LLM_res:
             print("⚠️ LLM_res is empty! No data to write.")
         else:
-            with open(output_path, "a", encoding="utf-8") as outfile:
+            with open(os.path.abspath(output_path), "a", encoding="utf-8") as outfile:
                 outfile.write(LLM_res + "\n")
 
     print(f"스캔결과 {os.path.abspath(output_path)}에 저장되었습니다.")
