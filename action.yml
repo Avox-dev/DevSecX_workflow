@@ -3,33 +3,40 @@ description: "Scan the current repository's source code, send it to the LLM API 
 runs:
   using: "composite"
   steps:
-    #호출한 리포지토리 체크아웃
+    # 1. 호출한 리포지토리 체크아웃
     - name: Checkout current repository
       uses: actions/checkout@v3
-    #DevSecX_workflow 리포지토리 체크아웃
+
+    # 2. DevSecX_workflow 리포지토리 체크아웃
     - name: Checkout DevSecX_workflow repository
       uses: actions/checkout@v3
       with:
         repository: avox-dev/DevSecX_workflow
         ref: main
         path: devsecx_workflow
-    #3.12 파이썬
+
+    # 3. 3.12 버전의 파이썬 설정
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.12"
-    # 종속성 설치
+
+    # 4. 필수 패키지 설치
     - name: Install required packages
       shell: bash
       run: |
         pip install --upgrade pip
         pip install requests groq bandit
-    # 스크립트 실행
+
+    # 5. 스크립트 실행 (secrets를 환경 변수로 전달)
     - name: Run source code scan and LLM API request
       shell: bash
+      env:
+        MY_API_KEY: ${{ secrets.MY_API_KEY }}
       run: |
-        python devsecx_workflow/scan_llm.py --api-key "${{ secrets.MY_API_KEY }}"
-    #결과 아티팩트 업로드
+        python devsecx_workflow/scan_llm.py --api-key "$MY_API_KEY"
+
+    # 6. 결과 아티팩트 업로드
     - name: Upload LLM API Response Artifact
       uses: actions/upload-artifact@v4.6.1
       with:
