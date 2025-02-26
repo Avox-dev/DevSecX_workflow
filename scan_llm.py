@@ -87,7 +87,23 @@ def main():
             scan_result = run_bandit_cli(file_path)
 
             # LLM 요청 (Gemini 또는 Groq 사용 가능)
-            prompt = scan_result + '''요약 json파일로 줘'''
+            prompt = scan_result + """
+위 보안 스캔 결과를 바탕으로 다음 항목들을 포함하는 JSON 한글번역 요약 보고서를 작성해줘:
+{
+    "file": "<파일 경로>",
+    "issues": [
+        {
+            "id": "<취약점 ID>",
+            "description": "<취약점 설명>",
+            "severity": "<심각도>",
+            "reliability": "<신뢰도>",
+            "recommendation": "<보안 권고사항>"
+            "CWE": "<cwe>"
+        },
+        ...
+    ]
+}
+"""
             LLM_res = gemini_generate_content(prompt, args.api_key)  # 또는 Grok_req(prompt, args.api_key)
 
             # 결과 저장 (리스트에 추가)
@@ -101,7 +117,11 @@ def main():
 
         # 기존 코드 개선 (취약점 대체 코드 요청)
         with open(file_path, "r", encoding="utf-8") as code:
-            prompt = code.read() + "\n취약점 대체코드만줘 코드블럭금지\n"
+            prompt = code.read() + prompt = code.read() + """
+위 코드를 분석하여 보안 취약점을 개선한 수정 코드를 생성해줘.
+- 주석은 포함하지 말고, 순수 코드만 제공해줘.
+- 수정 전후의 차이점을 명확히 반영해줘.
+"""
             LLM_code_res = gemini_generate_content(prompt, args.api_key)  # 또는 Grok_req(prompt, args.api_key)
 
         # 수정된 코드 저장
