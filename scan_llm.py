@@ -117,7 +117,7 @@ def main():
 
         # 기존 코드 개선 (취약점 대체 코드 요청)
         with open(file_path, "r", encoding="utf-8") as code:
-            prompt = code.read() + prompt = code.read() + """
+            prompt = code.read()+ """
 위 코드를 분석하여 보안 취약점을 개선한 수정 코드를 생성해줘.
 - 주석은 포함하지 말고, 순수 코드만 제공해줘.
 - 수정 전후의 차이점을 명확히 반영해줘.
