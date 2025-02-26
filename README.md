@@ -51,7 +51,7 @@ jobs:
 
           git add response.json
           git add new/ || echo "No new folder to add"
-
+          git pull
           git commit -m "🔄 Auto-commit: LLM scan results & fixed code" || echo "No changes to commit"
           git push origin main || echo "No changes to push"
         env:
