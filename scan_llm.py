@@ -10,7 +10,7 @@ import os
 def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", ".h")):
     """
     주어진 루트 디렉토리 내에서 지정된 확장자를 가진 모든 소스 파일의 경로를 리스트로 반환합니다.
-    단, 'DevSecX_workflow' 폴더는 제외합니다.
+    단, 'devsecx_workflow' 폴더 및 그 하위 폴더들은 제외합니다.
     
     Parameters:
         root_dir (str): 소스 파일 검색을 시작할 루트 디렉토리 경로.
@@ -22,15 +22,16 @@ def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", 
     source_files = []
     
     for dirpath, dirnames, filenames in os.walk(root_dir):
-        # 'DevSecX_workflow' 폴더가 있으면 리스트에서 제거하여 탐색에서 제외
-        if "DevSecX_workflow" in dirnames:
-            dirnames.remove("DevSecX_workflow")  # 해당 폴더의 하위 경로를 탐색하지 않음
-
+        # devsecx_workflow 폴더 및 모든 하위 폴더 제외
+        if "devsecx_workflow" in dirpath:
+            continue  # 탐색에서 제외
+        
         for filename in filenames:
             if filename.endswith(extensions):
                 source_files.append(os.path.join(dirpath, filename))
     
     return source_files
+
 
 
 def save_fixed_code(file_path, LLM_code_res):
@@ -71,7 +72,9 @@ def main():
     repo_path = os.getenv("GITHUB_WORKSPACE", os.getcwd())
     source_files_list=get_source_files(repo_path)
     print(f"🔍 Scanning source files in: {repo_path}")
-
+    print("📂 탐색된 소스 파일 목록:")
+    for file in source_files:
+        print(file)
     for file_path in source_files_list:
         try:
             # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
