@@ -30,8 +30,10 @@ def main():
     parser.add_argument("--api-key", required=True, help="LLM API 키")
     args = parser.parse_args()
 
-    source_files_list=get_source_files('../DevSecX')
-    
+    # 현재 GitHub Actions에서 실행 중인 리포지토리 경로 가져오기
+    repo_path = os.getenv("GITHUB_WORKSPACE", os.getcwd())
+    source_files_list=get_source_files(repo_path)
+    print(f"🔍 Scanning source files in: {repo_path}")
     for file_path in source_files_list:
         try:
             # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
@@ -79,17 +81,10 @@ def main():
         else:
             with open(output_path, "a", encoding="utf-8") as outfile:
                 outfile.write(LLM_res + "\n")
-            
-            print(f"✅ Response saved to: {output_path}")
 
-        # 최종적으로 response.txt가 존재하는지 확인
-        if os.path.exists(output_path):
-            print(f"📂 response.txt exists at: {os.path.abspath(output_path)}")
-        else:
-            print("❌ response.txt was not created.")
-
+    print(f"스캔결과 {os.path.abspath(output_path)}에 저장되었습니다.")
                 
-    print("스캔결과 response.txt에 저장되었습니다.")
+    
 
 if __name__ == "__main__":
     main()
