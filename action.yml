@@ -28,15 +28,17 @@ runs:
         pip install --upgrade pip
         pip install requests groq bandit
 
-    # 5. 스크립트 실행 (env를 통해 API_KEY 전달)
+    # 5. 스크립트 실행 후 파일 존재 확인
     - name: Run source code scan and LLM API request
       shell: bash
       env:
         MY_API_KEY: ${{ env.MY_API_KEY }}
       run: |
         python devsecx_workflow/scan_llm.py --api-key "$MY_API_KEY"
+        echo "Checking if response.txt exists..."
+        ls -al
 
-    # 6. 결과 아티팩트 업로드
+    # 6. 결과 아티팩트 업로드 (파일 경로 확인 후 수정)
     - name: Upload LLM API Response Artifact
       uses: actions/upload-artifact@v4.6.1
       with:

@@ -18,4 +18,6 @@ jobs:
     steps:
       - name: Run DevSecX Workflow
         uses: avox-dev/DevSecX_workflow@main
+        env:
+          MY_API_KEY: ${{ secrets.MY_API_KEY }}
 ```
