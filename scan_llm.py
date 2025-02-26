@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import os,json
 import requests
 from Grok_api import Grok_req
 from bandit_result import run_bandit_cli
@@ -76,29 +76,41 @@ def main():
     source_files_list=get_source_files(repo_path)
     print(f"🔍 Scanning source files in: {repo_path}")
     print("📂 탐색된 소스 파일 목록:")
-    for file in source_files_list:
-        print(file)
+
+
+        # 전체 결과를 저장할 리스트
+    all_results = []
+
     for file_path in source_files_list:
         try:
-            # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
+            # Bandit 스캔 실행
             scan_result = run_bandit_cli(file_path)
-            prompt=scan_result+'''요약 json파일로 줘
-            '''
-            LLM_res=gemini_generate_content(prompt,args.api_key)#Grok_req(promft,args.api_key)
+
+            # LLM 요청 (Gemini 또는 Groq 사용 가능)
+            prompt = scan_result + '''요약 json파일로 줘'''
+            LLM_res = gemini_generate_content(prompt, args.api_key)  # 또는 Grok_req(prompt, args.api_key)
+
+            # 결과 저장 (리스트에 추가)
+            all_results.append({
+                "file": file_path,
+                "llm_response": LLM_res
+            })
+
         except Exception as e:
             print(f"{file_path} 스캔 중 오류 발생: {e}")
-        # 결과 파일 저장 경로 설정
-        output_path = "response.json"
-        with open(os.path.abspath(output_path), "a", encoding="utf-8") as outfile:
-            outfile.write(LLM_res + "\n")
 
-        # 기존 코드 개선
+        # 기존 코드 개선 (취약점 대체 코드 요청)
         with open(file_path, "r", encoding="utf-8") as code:
             prompt = code.read() + "\n취약점 대체코드만줘 코드블럭금지\n"
-            LLM_code_res = gemini_generate_content(prompt,args.api_key) #Grok_req(prompt, args.api_key)
+            LLM_code_res = gemini_generate_content(prompt, args.api_key)  # 또는 Grok_req(prompt, args.api_key)
 
         # 수정된 코드 저장
         save_fixed_code(file_path, LLM_code_res)
+
+    # ✅ JSON 파일을 `for` 루프 종료 후 한 번만 저장
+    output_path = "response.json"
+    with open(os.path.abspath(output_path), "w", encoding="utf-8") as outfile:
+        json.dump(all_results, outfile, ensure_ascii=False, indent=4)
 
     print(f"스캔결과 {os.path.abspath(output_path)}에 저장되었습니다.")
                 
