@@ -73,7 +73,7 @@ def main():
     source_files_list=get_source_files(repo_path)
     print(f"🔍 Scanning source files in: {repo_path}")
     print("📂 탐색된 소스 파일 목록:")
-    for file in source_files:
+    for file in source_files_list:
         print(file)
     for file_path in source_files_list:
         try:
