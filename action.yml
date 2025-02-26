@@ -41,4 +41,10 @@ runs:
       uses: actions/upload-artifact@v4.6.1
       with:
         name: llm-response
-        path: response.txt
+        path: response.json
+    # 7. 결과코드드 아티팩트 업로드 (파일 경로 확인 후 수정)
+    - name: Upload LLM API Newcode Artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: llm-response
+        path: new

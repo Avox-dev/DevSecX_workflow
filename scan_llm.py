@@ -5,23 +5,60 @@ from Grok_api import Grok_req
 from bandit_result import run_bandit_cli
 import argparse
 
+import os
+
 def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", ".h")):
     """
     주어진 루트 디렉토리 내에서 지정된 확장자를 가진 모든 소스 파일의 경로를 리스트로 반환합니다.
+    단, 'DevSecX_workflow' 폴더는 제외합니다.
     
     Parameters:
         root_dir (str): 소스 파일 검색을 시작할 루트 디렉토리 경로.
-        extensions (tuple): 검색할 파일 확장자들의 튜플. 기본값은 (".py", ".js", ".java", ".cpp", ".c", ".h") 입니다.
+        extensions (tuple): 검색할 파일 확장자들의 튜플.
     
     Returns:
         list: 해당 확장자를 가진 파일들의 전체 경로 목록.
     """
     source_files = []
-    for dirpath, _, filenames in os.walk(root_dir):
+    
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        # 'DevSecX_workflow' 폴더가 있으면 리스트에서 제거하여 탐색에서 제외
+        if "DevSecX_workflow" in dirnames:
+            dirnames.remove("DevSecX_workflow")  # 해당 폴더의 하위 경로를 탐색하지 않음
+
         for filename in filenames:
             if filename.endswith(extensions):
                 source_files.append(os.path.join(dirpath, filename))
+    
     return source_files
+
+
+def save_fixed_code(file_path, LLM_code_res):
+    """
+    LLM에서 생성한 코드 수정본을 원본 파일명에 'new'를 붙여 'new' 폴더 내에 저장하는 함수.
+    
+    Parameters:
+        file_path (str): 원본 코드 파일 경로.
+        LLM_code_res (str): LLM에서 반환된 코드 수정본.
+    
+    Returns:
+        str: 새롭게 저장된 파일의 경로.
+    """
+    # 'new' 폴더 생성 (존재하지 않으면)
+    new_folder = os.path.join(os.path.dirname(file_path), "new")
+    os.makedirs(new_folder, exist_ok=True)
+
+    # 새 파일명 설정 (기존 파일명에 'new' 추가)
+    original_filename = os.path.basename(file_path)  # 예: main.py
+    new_filename = f"new_{original_filename}"  # 예: new_main.py
+    new_file_path = os.path.join(new_folder, new_filename)
+
+    # 수정된 코드 저장
+    with open(new_file_path, "w", encoding="utf-8") as new_file:
+        new_file.write(LLM_code_res)
+
+    print(f"✅ Fixed code saved to: {new_file_path}")
+    return new_file_path
 
 
 
@@ -34,53 +71,29 @@ def main():
     repo_path = os.getenv("GITHUB_WORKSPACE", os.getcwd())
     source_files_list=get_source_files(repo_path)
     print(f"🔍 Scanning source files in: {repo_path}")
+
     for file_path in source_files_list:
         try:
             # Bandit 스캔 실행 (run_bandit_cli 함수가 파일 경로를 인자로 받고 결과 문자열 반환)
             scan_result = run_bandit_cli(file_path)
-            promft=scan_result+'''
-            위 결과를 보고 밑에 조건대로 명심하고 응답하세요
-            1.한국어로 답변할것
-            2.아래 주어진 양식대로 작성할것
-            [Example report form].
-
-            1. Overview.  
-            - Scan run date and time and target file information:  
-            - Summary of the overall scan results (e.g., total number of issues detected, severity distribution, etc.):
-
-            2. Detailed vulnerability analysis  
-            - Vulnerability ID: Example) B307  
-            - Vulnerability Description:  
-            - Issues and security concerns related to the use of dangerous functions (e.g., eval).  
-            - Severity and confidence level: e.g.) Medium, High  
-            - Related CWE: CWE-78 (OS Instruction Injection)  
-            - Found in: File path and code line number  
-            - References: Links to related documentation
-
-            3. Impact Analysis and Risk Assessment  
-            - The impact of the vulnerability on the system or application:  
-            - Security risk assessment and prioritization:
-
-            4. Recommendations and remediation.  
-            - Specific recommendations for improving the vulnerability (e.g., recommendation to use ast.literal_eval instead of eval)  
-            - Suggestions for additional security best practices:
-
-            5. Conclusion  
-            - Summary of the report and recommendations for future remediation:
+            promft=scan_result+'''요약 json파일로 줘
             '''
             LLM_res=Grok_req(promft,args.api_key)
-            
         except Exception as e:
             print(f"{file_path} 스캔 중 오류 발생: {e}")
         # 결과 파일 저장 경로 설정
-        output_path = "response.txt"
+        output_path = "response.json"
+        with open(os.path.abspath(output_path), "a", encoding="utf-8") as outfile:
+            outfile.write(LLM_res + "\n")
 
-        # LLM_res 값이 비어 있는지 확인
-        if not LLM_res:
-            print("⚠️ LLM_res is empty! No data to write.")
-        else:
-            with open(os.path.abspath(output_path), "a", encoding="utf-8") as outfile:
-                outfile.write(LLM_res + "\n")
+        # 기존 코드 개선
+        with open(file_path, "r", encoding="utf-8") as code:
+            prompt = code.read() + "\n취약점 대체코드만줘 코드블럭금지\n"
+
+        LLM_code_res = Grok_req(prompt, args.api_key)
+
+        # 수정된 코드 저장
+        save_fixed_code(file_path, LLM_code_res)
 
     print(f"스캔결과 {os.path.abspath(output_path)}에 저장되었습니다.")
                 
