@@ -28,6 +28,8 @@ def get_source_files(root_dir, extensions=(".py", ".js", ".java", ".cpp", ".c", 
             continue  # 탐색에서 제외
         if "new" in dirpath:
             continue  # 탐색에서 제외
+        if "front" in dirpath:
+            continue  # 탐색에서 제외
         
         for filename in filenames:
             if filename.endswith(extensions):
