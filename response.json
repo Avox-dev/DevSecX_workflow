@@ -1,0 +1,18 @@
+[
+    {
+        "file": "C:\\Users\\user\\Desktop\\DevSecX_workflow\\aistudio_api.py",
+        "llm_response": "```json\n{\n  \"file\": \"C:\\\\Users\\\\user\\\\Desktop\\\\DevSecX_workflow\\\\aistudio_api.py\",\n  \"issues\": [\n    {\n      \"id\": \"B113\",\n      \"description\": \"타임아웃 없이 requests 호출\",\n      \"Location\": \"24:19\",\n      \"severity\": \"중간\",\n      \"reliability\": \"낮음\",\n      \"recommendation\": \"requests 라이브러리를 사용하여 HTTP 요청을 할 때 timeout 매개변수를 지정하십시오.  타임아웃이 설정되지 않으면 요청이 무기한으로 대기할 수 있으며 애플리케이션의 성능과 안정성에 영향을 미칠 수 있습니다.  예를 들어, requests.post(url, headers=headers, json=payload, timeout=10) 와 같이 timeout 값을 초 단위로 지정할 수 있습니다.  적절한 타임아웃 값은 애플리케이션의 요구사항과 네트워크 조건에 따라 달라집니다.\",\n      \"CWE\": \"CWE-400 (https://cwe.mitre.org/data/definitions/400.html)\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+        "file": "C:\\Users\\user\\Desktop\\DevSecX_workflow\\bandit_result.py",
+        "llm_response": "```json\n{\n  \"file\": \"C:\\\\Users\\\\user\\\\Desktop\\\\DevSecX_workflow\\\\bandit_result.py\",\n  \"issues\": [\n    {\n      \"id\": \"B404\",\n      \"description\": \"subprocess 모듈 사용과 관련된 보안 문제를 고려하십시오.\",\n      \"Location\": \"1:0\",\n      \"severity\": \"낮음\",\n      \"reliability\": \"높음\",\n      \"recommendation\": \"subprocess 모듈 사용 시, 보안상의 위험을 줄이기 위해 입력값을 검증하고, 안전한 대체 방법을 고려하십시오.  예를 들어,  `shlex.quote()`를 사용하여 명령어를 안전하게 구성하거나,  더 안전한 대안 라이브러리를 사용하는 것을 고려해 보세요.\",\n      \"CWE\": \"CWE-78\"\n    },\n    {\n      \"id\": \"B607\",\n      \"description\": \"부분적인 실행 파일 경로를 사용하여 프로세스를 시작합니다.\",\n      \"Location\": \"7:17\",\n      \"severity\": \"낮음\",\n      \"reliability\": \"높음\",\n      \"recommendation\": \"실행 파일의 전체 경로를 사용하여 프로세스를 시작하십시오.  경로가 잘못 지정되어 의도치 않은 실행 파일이 실행되는 것을 방지합니다.\",\n      \"CWE\": \"CWE-78\"\n    },\n    {\n      \"id\": \"B603\",\n      \"description\": \"subprocess 호출 - 신뢰할 수 없는 입력의 실행 여부를 확인하십시오.\",\n      \"Location\": \"7:17\",\n      \"severity\": \"낮음\",\n      \"reliability\": \"높음\",\n      \"recommendation\": \" `shell=True` 옵션을 사용하지 않고, 실행할 명령어와 인자를 리스트로 전달하십시오.  입력값을 검증하여 악의적인 코드 실행을 방지하고,  `subprocess.run()`의 `check=True`를 사용하여 명령어 실행 결과를 확인하고 오류를 처리하십시오.\",\n      \"CWE\": \"CWE-78\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+        "file": "C:\\Users\\user\\Desktop\\DevSecX_workflow\\Grok_api.py",
+        "llm_response": "```json\n{\n  \"file\": \"N/A\",\n  \"issues\": []\n}\n```\n\n**설명:**\n\n제공된 보안 스캔 결과에는 어떠한 취약점도 발견되지 않았습니다.  따라서 JSON 보고서의 \"issues\" 배열은 비어있습니다. \"file\" 필드는 특정 파일이 아닌 전체 코드에 대한 스캔이었으므로 \"N/A\"로 표시했습니다.  만약 특정 파일을 지정하여 스캔을 수행했다면 해당 파일 경로를 입력해야 합니다.\n"
+    },
+    {
+        "file": "C:\\Users\\user\\Desktop\\DevSecX_workflow\\scan_llm.py",
+        "llm_response": "```json\n{\n  \"file\": \"스캔 대상 파일 경로 (결과에 파일 경로 정보가 없어서 명시 불가)\",\n  \"issues\": []\n}\n```\n\n**설명:**\n\n제공된 보안 스캔 결과에는 어떠한 취약점도 발견되지 않았습니다. 따라서 JSON 보고서의 `issues` 배열은 비어 있습니다.  `file` 필드는 스캔 대상 파일의 경로를 나타내야 하지만, 제공된 정보에는 해당 내용이 없으므로 \"스캔 대상 파일 경로 (결과에 파일 경로 정보가 없어서 명시 불가)\" 로 표시했습니다. 실제 스캔 결과에 파일 경로가 포함되어 있다면 그 값을 여기에 넣어야 합니다.\n"
+    }
+]
