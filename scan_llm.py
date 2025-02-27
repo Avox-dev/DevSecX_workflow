@@ -90,13 +90,14 @@ def main():
 
             # LLM 요청 (Gemini 또는 Groq 사용 가능)
             prompt = scan_result + """
-위 보안 스캔 결과를 바탕으로 다음 항목들을 포함하는 JSON 한글번역 요약 보고서를 작성해줘:
+위 보안 스캔 결과를 바탕으로 다음 항목들을 포함하는 JSON key,values 둘다 한글번역해서 요약 보고서를 작성해줘:
 {
     "file": "<파일 경로>",
     "issues": [
         {
             "id": "<취약점 ID>",
             "description": "<취약점 설명>",
+            "Location": "<취약점 라인>",
             "severity": "<심각도>",
             "reliability": "<신뢰도>",
             "recommendation": "<보안 권고사항>"
